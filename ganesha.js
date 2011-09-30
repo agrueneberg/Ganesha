@@ -1,16 +1,10 @@
 var ganesha = function() {
+    /**
+     * Submits a job.
+     */
     var _submitJob = function(job) {
-        if (!job) {
+        if (!job || job.constructor !== _Job) {
             throw 'Please provide a job description.';
-        }
-        if (!job['data']) {
-            throw 'Please provide input data.';
-        }
-        if (!job['map']) {
-            throw 'Please provide a map function.';
-        }
-        if (!job['callback']) {
-            throw 'Please provide a callback function.';
         }
         var mapOutput = {};
         var reduceOutput = {};
@@ -26,12 +20,6 @@ var ganesha = function() {
             }
             reduceOutput[key].push(value);
         };
-        if (job['inputFormat']) {
-            job['data'] = job['inputFormat'](job['data']);
-        }
-        if (!Array.isArray(job['data'])) {
-            throw 'Please provide the input data as an array.';
-        }
         job['data'].forEach(function(element, index) {
             job['map'](index, element, mapEmitter);
         });
@@ -44,21 +32,31 @@ var ganesha = function() {
             job['callback'](reduceOutput);
         }
     };
+    /**
+     * Creates a new job.
+     */
     var _createJob = function(data, map, callback, options) {
-        var job = {
-            data: data,
-            map: map,
-            callback: callback
-        };
-        if (options) {
-            if (options['reduce']) {
-                job['reduce'] = options['reduce']
-            }
-            if (options['inputFormat']) {
-                job['inputFormat'] = options['inputFormat']
-            }
+        return new _Job(data, map, callback, options);
+    };
+    /**
+     * Job class
+     */
+    var _Job = function(data, map, callback, options) {
+        if (!data || !Array.isArray(data)) {
+            throw 'Please provide an input data array.';
         }
-        return job;
+        if (!map || typeof map !== 'function') {
+            throw 'Please provide a map function.';
+        }
+        if (!callback || typeof callback !== 'function') {
+            throw 'Please provide a callback function.';
+        }
+        this.data = data;
+        this.map = map;
+        this.callback = callback;
+        if (options && options['reduce'] && typeof options['reduce'] === 'function') {
+            this.reduce = options['reduce'];
+        }
     };
     return {
         submitJob: _submitJob,
