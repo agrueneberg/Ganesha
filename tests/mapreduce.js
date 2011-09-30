@@ -37,14 +37,17 @@ describe('MapReduce', function() {
         var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque commodo porta facilisis. Sed pretium velit facilisis enim feugiat ut bibendum orci elementum. Fusce mattis, ante id porta adipiscing, orci mauris ultricies enim, in tincidunt erat mauris eget arcu. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Morbi metus tellus, euismod nec consectetur in, malesuada eget purus. In placerat sapien a purus tempor hendrerit. Quisque vel mi euismod orci tristique auctor non ac nunc. Nam sit amet nunc erat. Mauris dictum augue non lectus tincidunt quis interdum nunc convallis. Suspendisse eleifend, leo at cursus hendrerit, nisl leo faucibus turpis, vitae volutpat massa nisi in erat. Morbi dictum nunc nec erat aliquet adipiscing sed id dolor.";
         var output = ganesha(ganesha.createJob(text, function(key, value, emit) {
             emit(value, 1);
-        }, function(key, values, emit) {
-            var n = 0;
-            values.forEach(function(value) {
-                n += value;
-            });
-            emit(key, n);
-        }, function(data) {
-            return data.toLowerCase().substr(0, data.length - 1).split(/[,.]? /);
+        }, {
+            reduce: function(key, values, emit) {
+                var n = 0;
+                values.forEach(function(value) {
+                    n += value;
+                });
+                emit(key, n);
+            },
+            inputFormat: function(data) {
+                return data.toLowerCase().substr(0, data.length - 1).split(/[,.]? /);
+            }
         }));
         var mostFrequentWord;
         for (var word in output) {

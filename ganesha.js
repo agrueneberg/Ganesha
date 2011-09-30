@@ -43,11 +43,18 @@ var ganesha = function(job) {
         return reduceOutput;
     }
 };
-ganesha.createJob = function(data, map, reduce, inputFormat) {
-    return {
+ganesha.createJob = function(data, map, options) {
+    var job = {
         data: data,
-        map: map,
-        reduce: reduce,
-        inputFormat: inputFormat
+        map: map
     };
+    if (options) {
+        if (options['reduce']) {
+            job['reduce'] = options['reduce']
+        }
+        if (options['inputFormat']) {
+            job['inputFormat'] = options['inputFormat']
+        }
+    }
+    return job;
 }
