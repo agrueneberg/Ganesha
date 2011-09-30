@@ -13,8 +13,8 @@ var mapReduce = function(data, map, reduce) {
         }
         reduceOutput[key].push(value);
     };
-    data.forEach(function(chunk) {
-        map(chunk, mapEmitter);
+    data.forEach(function(element, index) {
+        map(index, element, mapEmitter);
     });
     for (var key in mapOutput) {
         reduce(key, mapOutput[key], reduceEmitter);
