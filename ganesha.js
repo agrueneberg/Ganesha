@@ -1,6 +1,3 @@
-/**
- * @param (data -> []) inputFormat Converts data to an array.
- */
 var ganesha = function() {
     var _submitJob = function(job) {
         if (!job) {
