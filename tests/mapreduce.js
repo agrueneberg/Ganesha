@@ -1,5 +1,31 @@
 describe('MapReduce', function() {
 
+    it('should fail for no arguments', function() {
+        expect(function() {
+            ganesha();
+        }).toThrow('Please provide a job description.');
+    });
+
+    it('should fail for empty job description', function() {
+        expect(function() {
+            ganesha(ganesha.createJob())
+        }).toThrow('Please provide input data.');
+    });
+
+    it('should fail for just the data argument', function() {
+        expect(function() {
+            ganesha(ganesha.createJob('test'))
+        }).toThrow('Please provide a map function.');
+    });
+
+    it('should fail if the input data is not an array and no inputFormat function is provided', function() {
+        expect(function() {
+            ganesha(ganesha.createJob('test', function(key, value, emit) {
+                emit(key, value);
+            }))
+        }).toThrow('Please provide the input data as an array.');
+    });
+
     it('should return {0:[2],1:[4],2:[6],3:[8]} for ([1,2,3,4], (k,v) -> emit(k,v*2))', function() {
         var output = ganesha(ganesha.createJob([1,2,3,4], function(key, value, emit) {
             emit(key, value * 2);

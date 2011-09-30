@@ -2,6 +2,15 @@
  * @param (data -> []) inputFormat Converts data to an array.
  */
 var ganesha = function(job) {
+    if (!job) {
+        throw 'Please provide a job description.';
+    }
+    if (!job['data']) {
+        throw 'Please provide input data.';
+    }
+    if (!job['map']) {
+        throw 'Please provide a map function.';
+    }
     var mapOutput = {};
     var reduceOutput = {};
     var mapEmitter = function(key, value) {
@@ -16,17 +25,20 @@ var ganesha = function(job) {
         }
         reduceOutput[key].push(value);
     };
-    if (job.inputFormat) {
-        job.data = job.inputFormat(job.data);
+    if (job['inputFormat']) {
+        job['data'] = job['inputFormat'](job['data']);
     }
-    job.data.forEach(function(element, index) {
-        job.map(index, element, mapEmitter);
+    if (!Array.isArray(job['data'])) {
+        throw 'Please provide the input data as an array.';
+    }
+    job['data'].forEach(function(element, index) {
+        job['map'](index, element, mapEmitter);
     });
-    if (!job.reduce) {
+    if (!job['reduce']) {
         return mapOutput;
     } else {
         for (var key in mapOutput) {
-            job.reduce(key, mapOutput[key], reduceEmitter);
+            job['reduce'](key, mapOutput[key], reduceEmitter);
         };
         return reduceOutput;
     }
