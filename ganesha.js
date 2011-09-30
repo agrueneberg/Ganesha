@@ -11,6 +11,9 @@ var ganesha = function(job) {
     if (!job['map']) {
         throw 'Please provide a map function.';
     }
+    if (!job['callback']) {
+        throw 'Please provide a callback function.';
+    }
     var mapOutput = {};
     var reduceOutput = {};
     var mapEmitter = function(key, value) {
@@ -35,18 +38,19 @@ var ganesha = function(job) {
         job['map'](index, element, mapEmitter);
     });
     if (!job['reduce']) {
-        return mapOutput;
+        job['callback'](mapOutput);
     } else {
         for (var key in mapOutput) {
             job['reduce'](key, mapOutput[key], reduceEmitter);
         };
-        return reduceOutput;
+        job['callback'](reduceOutput);
     }
 };
-ganesha.createJob = function(data, map, options) {
+ganesha.createJob = function(data, map, callback, options) {
     var job = {
         data: data,
-        map: map
+        map: map,
+        callback: callback
     };
     if (options) {
         if (options['reduce']) {
