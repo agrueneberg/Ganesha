@@ -1,4 +1,7 @@
-var mapReduce = function(data, map, reduce) {
+/**
+ * @param (data -> []) inputFormat Converts data to an array.
+ */
+var mapReduce = function(data, map, reduce, inputFormat) {
     var mapOutput = {};
     var reduceOutput = {};
     var mapEmitter = function(key, value) {
@@ -13,6 +16,9 @@ var mapReduce = function(data, map, reduce) {
         }
         reduceOutput[key].push(value);
     };
+    if (inputFormat) {
+        data = inputFormat(data);
+    }
     data.forEach(function(element, index) {
         map(index, element, mapEmitter);
     });
