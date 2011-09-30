@@ -22,8 +22,12 @@ var mapReduce = function(data, map, reduce, inputFormat) {
     data.forEach(function(element, index) {
         map(index, element, mapEmitter);
     });
-    for (var key in mapOutput) {
-        reduce(key, mapOutput[key], reduceEmitter);
-    };
-    return reduceOutput;
+    if (!reduce) {
+        return mapOutput;
+    } else {
+        for (var key in mapOutput) {
+            reduce(key, mapOutput[key], reduceEmitter);
+        };
+        return reduceOutput;
+    }
 };
