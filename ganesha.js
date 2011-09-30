@@ -1,7 +1,7 @@
 /**
  * @param (data -> []) inputFormat Converts data to an array.
  */
-var ganesha = function(data, map, reduce, inputFormat) {
+var ganesha = function(job) {
     var mapOutput = {};
     var reduceOutput = {};
     var mapEmitter = function(key, value) {
@@ -16,18 +16,26 @@ var ganesha = function(data, map, reduce, inputFormat) {
         }
         reduceOutput[key].push(value);
     };
-    if (inputFormat) {
-        data = inputFormat(data);
+    if (job.inputFormat) {
+        job.data = job.inputFormat(job.data);
     }
-    data.forEach(function(element, index) {
-        map(index, element, mapEmitter);
+    job.data.forEach(function(element, index) {
+        job.map(index, element, mapEmitter);
     });
-    if (!reduce) {
+    if (!job.reduce) {
         return mapOutput;
     } else {
         for (var key in mapOutput) {
-            reduce(key, mapOutput[key], reduceEmitter);
+            job.reduce(key, mapOutput[key], reduceEmitter);
         };
         return reduceOutput;
     }
 };
+ganesha.createJob = function(data, map, reduce, inputFormat) {
+    return {
+        data: data,
+        map: map,
+        reduce: reduce,
+        inputFormat: inputFormat
+    };
+}
