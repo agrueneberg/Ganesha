@@ -1,7 +1,7 @@
 /**
  * @param (data -> []) inputFormat Converts data to an array.
  */
-var mapReduce = function(data, map, reduce, inputFormat) {
+var ganesha = function(data, map, reduce, inputFormat) {
     var mapOutput = {};
     var reduceOutput = {};
     var mapEmitter = function(key, value) {
