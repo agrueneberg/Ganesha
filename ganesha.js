@@ -1,15 +1,13 @@
-/*jslint white: true, nomen: true, newcap: true */
-
-var ganesha = (function() {
+var ganesha = (function () {
     "use strict";
     /**
      * Declarations
      */
-    var _Job, _submitJob, _createJob;
+    var Job, submitJob, createJob;
     /**
      * Job class
      */
-    _Job = function(data, map, callback, options) {
+    Job = function (data, map, callback, options) {
         if (!data || !Array.isArray(data)) {
             throw 'Please provide an input data array.';
         }
@@ -29,26 +27,26 @@ var ganesha = (function() {
     /**
      * Submits a job.
      */
-    _submitJob = function(job) {
+    submitJob = function (job) {
         var mapOutput, reduceOutput, mapEmitter, reduceEmitter, key;
-        if (!job || job.constructor !== _Job) {
+        if (!job || job.constructor !== Job) {
             throw 'Please provide a job description.';
         }
         mapOutput = {};
         reduceOutput = {};
-        mapEmitter = function(key, value) {
+        mapEmitter = function (key, value) {
             if (!mapOutput[key]) {
                 mapOutput[key] = [];
             }
             mapOutput[key].push(value);
         };
-        reduceEmitter = function(key, value) {
+        reduceEmitter = function (key, value) {
             if (reduceOutput[key] === undefined) {
                 reduceOutput[key] = [];
             }
             reduceOutput[key].push(value);
         };
-        job.data.forEach(function(element, index) {
+        job.data.forEach(function (element, index) {
             job.map(index, element, mapEmitter);
         });
         if (!job.reduce) {
@@ -65,11 +63,11 @@ var ganesha = (function() {
     /**
      * Creates a new job.
      */
-    _createJob = function(data, map, callback, options) {
-        return new _Job(data, map, callback, options);
+    createJob = function (data, map, callback, options) {
+        return new Job(data, map, callback, options);
     };
     return {
-        submitJob: _submitJob,
-        createJob: _createJob
+        submitJob: submitJob,
+        createJob: createJob
     };
 }());
