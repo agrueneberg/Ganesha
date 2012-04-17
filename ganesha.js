@@ -1,36 +1,31 @@
-var ganesha = (function () {
+(function (exports) {
     "use strict";
-    /**
-     * Declarations
-     */
+
     var Job, submitJob, createJob;
-    /**
-     * Job class
-     */
+
     Job = function (data, map, callback, options) {
-        if (!data || !Array.isArray(data)) {
-            throw 'Please provide an input data array.';
+        this.dataType = Object.toType(data);
+        if (this.dataType !== "object"  && this.dataType !== "array") {
+            throw "Please provide an input data object or array.";
         }
-        if (!map || typeof map !== 'function') {
-            throw 'Please provide a map function.';
+        if (Object.toType(map) !== "function") {
+            throw "Please provide a map function.";
         }
-        if (!callback || typeof callback !== 'function') {
-            throw 'Please provide a callback function.';
+        if (Object.toType(callback) !== "function") {
+            throw "Please provide a callback function.";
         }
         this.data = data;
         this.map = map;
         this.callback = callback;
-        if (options && options.reduce && typeof options.reduce === 'function') {
+        if (Object.toType(options) === "object" && Object.toType(options.reduce) === "function") {
             this.reduce = options.reduce;
         }
     };
-    /**
-     * Submits a job.
-     */
-    submitJob = function (job) {
+
+    exports.submitJob = submitJob = function (job) {
         var mapOutput, reduceOutput, mapEmitter, reduceEmitter, key;
-        if (!job || job.constructor !== Job) {
-            throw 'Please provide a job description.';
+        if (Object.toType(job) !== "object" || job.constructor !== Job) {
+            throw "Please provide a job description.";
         }
         mapOutput = {};
         reduceOutput = {};
@@ -46,9 +41,17 @@ var ganesha = (function () {
             }
             reduceOutput[key].push(value);
         };
-        job.data.forEach(function (element, index) {
-            job.map(index, element, mapEmitter);
-        });
+        if (job.dataType === "object") {
+         // The input is an object.
+            Object.keys(job.data).forEach(function (key) {
+                job.map(key, job.data[key], mapEmitter);
+            });
+        } else {
+         // The input is an array.
+            job.data.forEach(function (element, index) {
+                job.map(index, element, mapEmitter);
+            });
+        }
         if (!job.reduce) {
             job.callback(mapOutput);
         } else {
@@ -60,14 +63,9 @@ var ganesha = (function () {
             job.callback(reduceOutput);
         }
     };
-    /**
-     * Creates a new job.
-     */
-    createJob = function (data, map, callback, options) {
+
+    exports.createJob = function (data, map, callback, options) {
         return new Job(data, map, callback, options);
     };
-    return {
-        submitJob: submitJob,
-        createJob: createJob
-    };
-}());
+
+}(this.ganesha = {}));
