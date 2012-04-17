@@ -1,34 +1,38 @@
 /**
  * Ganesha is a browser-based implementation of MapReduce.
- * Depends on: toType.js
  */
 (function (exports) {
     "use strict";
 
-    var Job, submitJob, createJob;
+    var toType, Job, submitJob, createJob;
+
+    // See: https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
+    toType = function (obj) {
+        return ({}).toString.call(obj).match(/\s([a-z|A-Z]+)/)[1].toLowerCase();
+    };
 
     Job = function (data, map, callback, options) {
-        this.dataType = Object.toType(data);
+        this.dataType = toType(data);
         if (this.dataType !== "object"  && this.dataType !== "array") {
             throw "Please provide an input data object or array.";
         }
-        if (Object.toType(map) !== "function") {
+        if (toType(map) !== "function") {
             throw "Please provide a map function.";
         }
-        if (Object.toType(callback) !== "function") {
+        if (toType(callback) !== "function") {
             throw "Please provide a callback function.";
         }
         this.data = data;
         this.map = map;
         this.callback = callback;
-        if (Object.toType(options) === "object" && Object.toType(options.reduce) === "function") {
+        if (toType(options) === "object" && toType(options.reduce) === "function") {
             this.reduce = options.reduce;
         }
     };
 
     exports.submitJob = submitJob = function (job) {
         var mapOutput, reduceOutput, mapEmitter, reduceEmitter, key;
-        if (Object.toType(job) !== "object" || job.constructor !== Job) {
+        if (toType(job) !== "object" || job.constructor !== Job) {
             throw "Please provide a job description.";
         }
         mapOutput = {};
