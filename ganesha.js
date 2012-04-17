@@ -1,3 +1,7 @@
+/**
+ * Ganesha is a browser-based implementation of MapReduce.
+ * Depends on: toType.js
+ */
 (function (exports) {
     "use strict";
 
