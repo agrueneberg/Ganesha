@@ -1,4 +1,4 @@
-describe("MapReduce", function () {
+describe("Ganesha", function () {
 
     var noop, defaultMapFunction;
 
