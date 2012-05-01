@@ -10,31 +10,31 @@ describe("Ganesha", function () {
     it("should fail for no arguments", function () {
         expect(function () {
             ganesha.submitJob();
-        }).toThrow("Please provide a job description.");
+        }).to.throwException("Please provide a job description.");
     });
 
     it("should fail for empty job description", function () {
         expect(function () {
             ganesha.submitJob(ganesha.createJob());
-        }).toThrow("Please provide an input data object or array.");
+        }).to.throwException("Please provide an input data object or array.");
     });
 
     it("should fail if map and callback are not defined", function () {
         expect(function () {
             ganesha.submitJob(ganesha.createJob([1,2,3,4]));
-        }).toThrow("Please provide a map function.");
+        }).to.throwException("Please provide a map function.");
     });
 
     it("should fail if callback is not defined", function () {
         expect(function () {
             ganesha.submitJob(ganesha.createJob([1,2,3,4], defaultMapFunction));
-        }).toThrow("Please provide a callback function.");
+        }).to.throwException("Please provide a callback function.");
     });
 
     it("should fail if the input data is not an object or an array", function () {
         expect(function () {
             ganesha.submitJob(ganesha.createJob("fail", defaultMapFunction, noop));
-        }).toThrow("Please provide an input data object or array.");
+        }).to.throwException("Please provide an input data object or array.");
     });
 
     it("should return 'in' as the most frequent word", function () {
@@ -58,7 +58,7 @@ describe("Ganesha", function () {
                     mostFrequentWord.frequency = output[word];
                 }
             };
-            expect(mostFrequentWord.word).toEqual("in");
+            expect(mostFrequentWord.word).to.equal("in");
         }, {
             reduce: function (key, values, emit) {
                 var n = 0;
@@ -74,7 +74,12 @@ describe("Ganesha", function () {
         ganesha.submitJob(ganesha.createJob([1,2,3,4], function (key, value, emit) {
             emit(key, value * 2);
         }, function (output) {
-            expect(output).toEqual({0:[2],1:[4],2:[6],3:[8]});
+            expect(output).to.eql({
+                "0": [2],
+                "1": [4],
+                "2": [6],
+                "3": [8]
+            });
         }));
     });
 
